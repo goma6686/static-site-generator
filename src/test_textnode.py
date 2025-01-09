@@ -21,5 +21,20 @@ class TestTextNode(unittest.TestCase):
     def test_bad_data(self):
         self.assertRaises(TypeError, lambda: TextNode())
 
+    def text_to_html_node(self):
+        text_node = TextNode("Random Text", "text")
+        bold_node = TextNode("Random Text", "bold")
+        italic_node = TextNode("Random Text", "italic")
+        code_node = TextNode("Random Text", "code")
+        link_node = TextNode("Random Link Text", "link", "https://www.google.com")
+        image_node = TextNode("Random Alt Text", "image", "https://some_image.jpg")
+
+        self.assertEqual(repr(text_node), "HTMLNode(None, 'Random Text', None, {})")
+        self.assertEqual(repr(bold_node), "HTMLNode('b', 'Random Text', None, {})")
+        self.assertEqual(repr(italic_node), "HTMLNode('i', 'Random Text', None, {})")
+        self.assertEqual(repr(code_node), "HTMLNode('code', 'Random Text', None, {})")
+        self.assertEqual(repr(link_node), "HTMLNode('a', 'Random Link Text', None, {'href': 'https://www.google.com'})")
+        self.assertEqual(repr(image_node), "HTMLNode('img', None, None, {'src': 'https://some_image.jpg', 'alt': 'Random Alt Text'})")
+
 if __name__ == "__main__":
     unittest.main()
