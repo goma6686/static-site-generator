@@ -22,12 +22,12 @@ class TestTextNode(unittest.TestCase):
         self.assertRaises(TypeError, lambda: TextNode())
 
     def text_to_html_node(self):
-        text_node = TextNode("Random Text", "text")
-        bold_node = TextNode("Random Text", "bold")
-        italic_node = TextNode("Random Text", "italic")
-        code_node = TextNode("Random Text", "code")
-        link_node = TextNode("Random Link Text", "link", "https://www.google.com")
-        image_node = TextNode("Random Alt Text", "image", "https://some_image.jpg")
+        text_node = TextNode("Random Text", TextType.TEXT)
+        bold_node = TextNode("Random Text", TextType.BOLD)
+        italic_node = TextNode("Random Text", TextType.ITALIC)
+        code_node = TextNode("Random Text", TextType.CODE)
+        link_node = TextNode("Random Link Text", TextType.LINK, "https://www.google.com")
+        image_node = TextNode("Random Alt Text", TextType.IMAGE, "https://some_image.jpg")
 
         self.assertEqual(repr(text_node), "HTMLNode(None, 'Random Text', None, {})")
         self.assertEqual(repr(bold_node), "HTMLNode('b', 'Random Text', None, {})")
