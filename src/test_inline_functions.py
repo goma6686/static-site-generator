@@ -1,6 +1,6 @@
 import unittest
 
-from functions import *
+from inline_functions import *
 from textnode import TextNode, TextType
 
 class TestDelimiter(unittest.TestCase):

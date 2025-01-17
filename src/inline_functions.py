@@ -157,7 +157,6 @@ def text_to_textnodes(text):
     nodes = [node]
     #apply each split function to all nodes in the list
     nodes = split_nodes_image(nodes)
-    print("After image split:", nodes)
     nodes = split_nodes_link(nodes)
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
