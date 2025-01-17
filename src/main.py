@@ -1,8 +1,10 @@
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
-from delimiter import split_nodes_link, split_nodes_image
+from functions import text_to_textnodes
 
 def main():
-    print("Hello World")
+    text = "an image with ![**bold**](https://i.imgur.com/fJRm4Vk.jpeg) alt text"
+    nodes = text_to_textnodes(text)
+    print(f"final nodes: {nodes}")
 
 main()

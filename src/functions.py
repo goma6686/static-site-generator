@@ -61,7 +61,9 @@ def split_nodes_image(old_nodes):
         for link_text, link in links:
             #find link
             try:
-                match = re.search(rf"!\[({link_text})]\({link}\)", text)
+                escaped_link_text = re.escape(link_text)
+                escaped_link = re.escape(link)
+                match = re.search(rf"!\[({escaped_link_text})]\({escaped_link}\)", text)
                 #get start and end
                 start = match.start()
                 end = match.end()
@@ -73,6 +75,14 @@ def split_nodes_image(old_nodes):
             if start > 0:
                 #add text node
                 new_list.append(TextNode(text[:start], node.text_type, node.url))
+            #check if link_text is in markdown too
+            node = TextNode(link_text, TextType.TEXT)
+            nodes = [node]
+            nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+            nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+            nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+            if len(nodes) > 0:
+                link_text = nodes[0].text
             #add link node
             new_list.append(TextNode(link_text, TextType.IMAGE, link))
             #remove text
@@ -105,7 +115,9 @@ def split_nodes_link(old_nodes):
         for link_text, link in links:
             #find link
             try:
-                match = re.search(rf"\[({link_text})]\({link}\)", text)
+                escaped_link_text = re.escape(link_text)
+                escaped_link = re.escape(link)
+                match = re.search(rf"\[({escaped_link_text})]\({escaped_link}\)", text)
                 #get start and end
                 start = match.start()
                 end = match.end()
@@ -117,6 +129,15 @@ def split_nodes_link(old_nodes):
             if start > 0:
                 #add text node
                 new_list.append(TextNode(text[:start], node.text_type, node.url))
+            
+            #check if link_text is in markdown too
+            node = TextNode(link_text, TextType.TEXT)
+            nodes = [node]
+            nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+            nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+            nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+            if len(nodes) > 0:
+                link_text = nodes[0].text
             #add link node
             new_list.append(TextNode(link_text, TextType.LINK, link))
             #remove text
@@ -127,3 +148,20 @@ def split_nodes_link(old_nodes):
             new_list.append(TextNode(text, node.text_type, node.url))
 
     return new_list
+
+
+def text_to_textnodes(text):
+    #first node is text
+    node = TextNode(text, TextType.TEXT)
+    #start with a list containing the text node
+    nodes = [node]
+    #apply each split function to all nodes in the list
+    nodes = split_nodes_image(nodes)
+    print("After image split:", nodes)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+
+    return nodes
+

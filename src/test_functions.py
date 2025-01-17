@@ -1,6 +1,6 @@
 import unittest
 
-from delimiter import split_nodes_delimiter, extract_markdown_links, extract_markdown_images, split_nodes_image
+from functions import *
 from textnode import TextNode, TextType
 
 class TestDelimiter(unittest.TestCase):
@@ -133,3 +133,59 @@ class TestSplitNodesImage(unittest.TestCase):
         self.assertEqual(new_nodes[3].text_type, TextType.IMAGE)
         self.assertEqual(new_nodes[4].text, " here")
         self.assertEqual(new_nodes[4].text_type, TextType.TEXT)
+
+class TestTextToNode(unittest.TestCase):
+    def test_text_to_node(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].text, "This is ")
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
+        self.assertEqual(nodes[1].text, "text")
+        self.assertEqual(nodes[1].text_type, TextType.BOLD)
+        self.assertEqual(nodes[2].text, " with an ")
+        self.assertEqual(nodes[2].text_type, TextType.TEXT)
+        self.assertEqual(nodes[3].text, "italic")
+        self.assertEqual(nodes[3].text_type, TextType.ITALIC)
+        self.assertEqual(nodes[4].text, " word and a ")
+        self.assertEqual(nodes[4].text_type, TextType.TEXT)
+        self.assertEqual(nodes[5].text, "code block")
+        self.assertEqual(nodes[5].text_type, TextType.CODE)
+        self.assertEqual(nodes[6].text, " and an ")
+        self.assertEqual(nodes[6].text_type, TextType.TEXT)
+        self.assertEqual(nodes[7].text, "obi wan image")
+        self.assertEqual(nodes[7].text_type, TextType.IMAGE)
+        self.assertEqual(nodes[8].text, " and a ")
+        self.assertEqual(nodes[8].text_type, TextType.TEXT)
+        self.assertEqual(nodes[9].text, "link")
+        self.assertEqual(nodes[9].text_type, TextType.LINK)
+
+    def text_text_bold_to_node(self):
+        text = "**just bold text**"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].text, "just bold text")
+        self.assertEqual(nodes[0].text_type, TextType.BOLD)
+
+    def link_then_bold_to_node(self):
+        text = "a [link](https://boot.dev) then some **bold** text"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].text, "a ")
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
+        self.assertEqual(nodes[1].text, "link")
+        self.assertEqual(nodes[1].text_type, TextType.LINK)
+        self.assertEqual(nodes[2].text, " then some ")
+        self.assertEqual(nodes[2].text_type, TextType.TEXT)
+        self.assertEqual(nodes[3].text, "bold")
+        self.assertEqual(nodes[3].text_type, TextType.BOLD)
+        self.assertEqual(nodes[4].text, " text")
+        self.assertEqual(nodes[4].text_type, TextType.TEXT)
+
+    def image_with_bold_alt(self):
+        text = "an image with ![**bold**](https://i.imgur.com/fJRm4Vk.jpeg) alt text"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].text, "an image with ")
+        self.assertEqual(nodes[0].text_type, TextType.TEXT)
+        self.assertEqual(nodes[1].text, "bold")
+        self.assertEqual(nodes[1].text_type, TextType.IMAGE)
+        self.assertEqual(nodes[1].url, "https://i.imgur.com/fJRm4Vk.jpeg")
+        self.assertEqual(nodes[2].text, " alt text")
+        self.assertEqual(nodes[2].text_type, TextType.TEXT)
