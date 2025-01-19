@@ -33,3 +33,24 @@ class TestBlock(unittest.TestCase):
 
         self.assertEqual(result[0], "# heading")
         self.assertEqual(result[1], "some text\nwith spaces")
+
+    def test_block_to_block_type(self):
+        # Test heading
+        assert block_to_block_type("# Heading") == "heading"
+        assert block_to_block_type("###### Heading") == "heading"
+        
+        # Test code block
+        assert block_to_block_type("```\ncode\n```") == "code"
+        
+        # Test quote
+        assert block_to_block_type(">line1\n>line2") == "quote"
+        
+        # Test unordered list
+        assert block_to_block_type("* item1\n* item2") == "unordered_list"
+        assert block_to_block_type("- item1\n- item2") == "unordered_list"
+        
+        # Test ordered list
+        assert block_to_block_type("1. item1\n2. item2") == "ordered_list"
+        
+        # Test paragraph
+        assert block_to_block_type("Just a normal paragraph") == "paragraph"
