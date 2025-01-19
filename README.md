@@ -1,8 +1,9 @@
 # Static Site Generator project
 
-Converts markdown files to simple website.
+Written as python project to test OOP and Functional Programming knowledge
 
-- Writted as python project to test OOP and Functional Programming knowledge
+- Converts markdown files to simple website.
+
 - Supports single level inline nesting.
   Not allowed:
   ```
@@ -12,3 +13,12 @@ Converts markdown files to simple website.
   ```
   This is text with a **bolded phrase** in the middle
   ```
+
+- Recursive page generation
+
+### Try it out:
+
+- Install python
+- Clone the project
+- Put .md files and folders containing .md files inside ./content
+- run ./main.sh
