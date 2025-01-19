@@ -1,9 +1,9 @@
-from textnode import TextNode, TextType
-from htmlnode import HTMLNode, LeafNode, ParentNode
-from inline_functions import text_to_textnodes
-from block_functions import markdown_to_blocks
+from block_functions import markdown_to_html
+from script import copy_files
+from generate import generate_page
 
 def main():
-    print("hello world")
+    copy_files()
+    generate_page("./content/index.md", "template.html", "./public/index.html")
 
 main()

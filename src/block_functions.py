@@ -1,5 +1,6 @@
-from htmlnode import HTMLNode, LeafNode, ParentNode
-from textnode import TextNode, TextType
+from htmlnode import LeafNode, ParentNode
+from inline_functions import text_to_textnodes
+from textnode import TextType
 import re
 
 def markdown_to_blocks(markdown):
@@ -60,19 +61,17 @@ def block_to_block_type(markdown_block):
     #converts a full markdown document into a single parent HTMLNode
 def markdown_to_html(markdown):
     #create the parent HTMLNode
-    parent =  ParentNode(tag="div", children=[])
+    main = ParentNode(tag="div", children=[])
     #split markdown into blocks
     blocks = markdown_to_blocks(markdown)
     #convert each block into an HTMLNode
     for i in range(0, len(blocks)):
-        
         #based on type, create a new HTMLNode with the correct data
         block_node = get_block_node(blocks[i])
-        #assign the proper child HTMLNode obj to block node
-        parent.children.append(block_node)
-    
-    #print(parent.to_html())
-    return parent.to_html()
+        #append the parent HTMLNode to the main HTMLNode
+        main.children.append(block_node)
+        
+    return main
 
 def get_block_node(block):
     """Converts a single markdown block into an HTMLNode object"""
@@ -98,13 +97,18 @@ def get_heading_node(block):
     heading_text = block[level+1:]
     #create the HTMLNode
     heading_node = LeafNode(tag=f"h{level}", value=heading_text)
+    
     return heading_node
 
 def get_code_node(block):
     #get the code text
-    code_text = block[3:-3]
+    code_text = block.split("```")[1].split("```")[0]
+
+    if code_text.startswith("\n"):
+        code_text = code_text[1:]
     #create the HTMLNode
     code_node = ParentNode(tag="pre", children=[LeafNode(tag="code", value=code_text)])
+    
     return code_node
 
 def get_quote_node(block):
@@ -117,7 +121,7 @@ def get_quote_node(block):
             raise ValueError("Invalid blockquote")
         #strip any leading or trailing whitespace from each quote
         quote = quote[1:].strip()
-        quote_node.children.append(LeafNode(tag="p", value=quote))
+        quote_node.children.append(LeafNode(tag=None, value=text_to_children(quote)))
     return quote_node
 
 def get_unordered_list_node(block):
@@ -126,7 +130,8 @@ def get_unordered_list_node(block):
     #strip any leading or trailing whitespace from each child
     children = [child.lstrip() for child in children]
     #create the HTMLNode
-    unordered_list_node = ParentNode(tag="ul", children=[LeafNode(tag="li", value=child[2:len(child)]) for child in children])
+    unordered_list_node = ParentNode(tag="ul", children=[LeafNode(tag="li", value=text_to_children(child[2:len(child)])) for child in children])
+    
     return unordered_list_node
 
 def get_ordered_list_node(block):
@@ -135,10 +140,31 @@ def get_ordered_list_node(block):
     #strip any leading or trailing whitespace from each child
     children = [child.lstrip() for child in children]
     #create the HTMLNode
-    ordered_list_node = ParentNode(tag="ol", children=[LeafNode(tag="li", value=child[2:len(child)]) for child in children])
+    ordered_list_node = ParentNode(tag="ol", children=[LeafNode(tag="li", value=text_to_children(child[3:len(child)])) for child in children])
     return ordered_list_node
 
 def get_paragraph_node(block):
     #create the HTMLNode
-    paragraph_node = LeafNode(tag="p", value=block)
+    paragraph_node = LeafNode(tag="p", value=text_to_children(block))
     return paragraph_node
+
+def text_to_children(text):
+    children = []
+    #split text into text nodes
+    text_nodes = text_to_textnodes(text)
+    #convert each text node into an HTMLNode
+    for text_node in text_nodes:
+        if text_node.text_type == TextType.IMAGE:
+            children.append(LeafNode(tag="img", value=None, props={"src": text_node.url, "alt": text_node.text}).to_html())
+        if text_node.text_type == TextType.LINK:
+            children.append(LeafNode(tag="a", value=text_node.text, props={"href": text_node.url}).to_html())
+        if text_node.text_type == TextType.ITALIC:
+            children.append(LeafNode(tag="i", value=text_node.text).to_html())
+        if text_node.text_type == TextType.BOLD:
+            children.append(LeafNode(tag="b", value=text_node.text).to_html())
+        if text_node.text_type == TextType.CODE:
+            children.append(LeafNode(tag="code", value=text_node.text).to_html())
+        if text_node.text_type == TextType.TEXT:
+            children.append(LeafNode(tag=None, value=text_node.text).to_html())
+    
+    return ''.join(children)
