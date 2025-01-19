@@ -54,3 +54,24 @@ class TestBlock(unittest.TestCase):
         
         # Test paragraph
         assert block_to_block_type("Just a normal paragraph") == "paragraph"
+
+    def test_empty_markdown(self):
+        markdown = ""
+        expected_html = "<div></div>"
+        self.assertEqual(markdown_to_html(markdown), expected_html)
+
+    def test_single_heading(self):
+        markdown = "# Heading"
+        expected_html = "<div><h1>Heading</h1></div>"
+        self.assertEqual(markdown_to_html(markdown), expected_html)
+
+    def test_multiple_blocks(self):
+        markdown = """
+        # Heading
+
+        This is a paragraph of text.
+
+        ```Code block```
+        """
+        expected_html = """<div><h1>Heading</h1><p>This is a paragraph of text.</p><pre><code>Code block</code></pre></div>"""
+        self.assertEqual(markdown_to_html(markdown), expected_html.strip())
