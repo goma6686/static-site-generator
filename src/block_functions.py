@@ -155,7 +155,7 @@ def text_to_children(text):
     #convert each text node into an HTMLNode
     for text_node in text_nodes:
         if text_node.text_type == TextType.IMAGE:
-            children.append(LeafNode(tag="img", value=None, props={"src": text_node.url, "alt": text_node.text}).to_html())
+            children.append(LeafNode(tag="img", value="", props={"src": text_node.url, "alt": text_node.text}).to_html())
         if text_node.text_type == TextType.LINK:
             children.append(LeafNode(tag="a", value=text_node.text, props={"href": text_node.url}).to_html())
         if text_node.text_type == TextType.ITALIC:
